@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="60" id="KGk-i7-Jjw" customClass="DefaultLocationTableViewCell" customModule="HideAndUnhideTableViewController" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="327" height="60"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="327" height="60"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ico_pin_sm" translatesAutoresizingMaskIntoConstraints="NO" id="zju-Xf-GMJ">
+                        <rect key="frame" x="27" y="20" width="14" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="14" id="i1n-qx-kNj"/>
+                            <constraint firstAttribute="height" constant="20" id="oRn-Nd-Wn6"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Current Location" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Se-lm-hwx">
+                        <rect key="frame" x="51" y="21" width="257" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.29019607843137252" green="0.29019607843137252" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wy1-ts-1FD">
+                        <rect key="frame" x="0.0" y="0.0" width="327" height="1"/>
+                        <color key="backgroundColor" red="0.84705882352941175" green="0.84705882352941175" blue="0.84705882352941175" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="z7w-cX-fJ6"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7cf-4j-Xs6">
+                        <rect key="frame" x="0.0" y="58.5" width="327" height="1"/>
+                        <color key="backgroundColor" red="0.84705882352941175" green="0.84705882352941175" blue="0.84705882352941175" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="PyO-3L-orA"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                <constraints>
+                    <constraint firstItem="wy1-ts-1FD" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="1yw-Jj-j8f"/>
+                    <constraint firstItem="wy1-ts-1FD" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="4WH-yA-ozO"/>
+                    <constraint firstItem="zju-Xf-GMJ" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="8M2-b8-UUF"/>
+                    <constraint firstItem="5Se-lm-hwx" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="S9o-wR-rPS"/>
+                    <constraint firstAttribute="trailing" secondItem="wy1-ts-1FD" secondAttribute="trailing" id="aUM-BO-8l6"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="5Se-lm-hwx" secondAttribute="trailing" constant="11" id="aaD-HC-ZSP"/>
+                    <constraint firstAttribute="bottom" secondItem="7cf-4j-Xs6" secondAttribute="bottom" id="lUz-RR-6pa"/>
+                    <constraint firstItem="5Se-lm-hwx" firstAttribute="leading" secondItem="zju-Xf-GMJ" secondAttribute="trailing" constant="10" id="nd7-th-kMF"/>
+                    <constraint firstAttribute="trailing" secondItem="7cf-4j-Xs6" secondAttribute="trailing" id="oMh-Ld-lfR"/>
+                    <constraint firstItem="zju-Xf-GMJ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="19" id="r8c-gu-tWo"/>
+                    <constraint firstItem="7cf-4j-Xs6" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="vu8-L6-VGg"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <connections>
+                <outlet property="bottomSepatorLine" destination="7cf-4j-Xs6" id="oBq-n3-sUB"/>
+                <outlet property="titleLabelOfCell" destination="5Se-lm-hwx" id="Eef-PG-r4b"/>
+            </connections>
+            <point key="canvasLocation" x="36.5" y="-17"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="ico_pin_sm" width="14" height="20"/>
+    </resources>
+</document>
