@@ -22,6 +22,7 @@
 		046F67461EB9DA54000B7694 /* CustomHeaderCellTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 046F67441EB9DA54000B7694 /* CustomHeaderCellTableViewCell.xib */; };
 		046F675A1EB9F46D000B7694 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046F67571EB9F46D000B7694 /* Constants.swift */; };
 		046F675B1EB9F46D000B7694 /* CommonFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 046F67581EB9F46D000B7694 /* CommonFunctions.swift */; };
+		04E09FE51EBB151000943DCC /* Search.png in Resources */ = {isa = PBXBuildFile; fileRef = 04E09FE41EBB151000943DCC /* Search.png */; };
 		373C8B4F03E2679CE14AFB19 /* Pods_HideAndUnhideTableViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8CFBF4E5A8CEB7A6AA51BCF /* Pods_HideAndUnhideTableViewController.framework */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +45,7 @@
 		046F67571EB9F46D000B7694 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		046F67581EB9F46D000B7694 /* CommonFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonFunctions.swift; sourceTree = "<group>"; };
 		046F67591EB9F46D000B7694 /* Fynd-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Fynd-Bridging-Header.h"; sourceTree = "<group>"; };
+		04E09FE41EBB151000943DCC /* Search.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Search.png; sourceTree = "<group>"; };
 		086AE7CDF4FCF8D5B4BB6A04 /* Pods-HideAndUnhideTableViewController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HideAndUnhideTableViewController.release.xcconfig"; path = "Pods/Target Support Files/Pods-HideAndUnhideTableViewController/Pods-HideAndUnhideTableViewController.release.xcconfig"; sourceTree = "<group>"; };
 		BCCFAB187AE695513E8724B1 /* Pods-HideAndUnhideTableViewController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HideAndUnhideTableViewController.debug.xcconfig"; path = "Pods/Target Support Files/Pods-HideAndUnhideTableViewController/Pods-HideAndUnhideTableViewController.debug.xcconfig"; sourceTree = "<group>"; };
 		D8CFBF4E5A8CEB7A6AA51BCF /* Pods_HideAndUnhideTableViewController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HideAndUnhideTableViewController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,6 +89,7 @@
 				046F67291EB9A5F2000B7694 /* Main.storyboard */,
 				046F67571EB9F46D000B7694 /* Constants.swift */,
 				046F67581EB9F46D000B7694 /* CommonFunctions.swift */,
+				04E09FE41EBB151000943DCC /* Search.png */,
 				046F67591EB9F46D000B7694 /* Fynd-Bridging-Header.h */,
 				046F672C1EB9A5F2000B7694 /* Assets.xcassets */,
 				046F672E1EB9A5F2000B7694 /* LaunchScreen.storyboard */,
@@ -183,6 +186,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04E09FE51EBB151000943DCC /* Search.png in Resources */,
 				046F673A1EB9AF8A000B7694 /* CurrentLocationSearchCell.xib in Resources */,
 				046F67301EB9A5F2000B7694 /* LaunchScreen.storyboard in Resources */,
 				046F67461EB9DA54000B7694 /* CustomHeaderCellTableViewCell.xib in Resources */,
@@ -208,7 +212,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		95237868F150E4344F3603CF /* [CP] Embed Pods Frameworks */ = {
