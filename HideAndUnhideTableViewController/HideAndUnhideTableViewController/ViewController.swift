@@ -17,60 +17,66 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBOutlet weak var imageAboveIcon: UIView!
     @IBOutlet weak var iconAboveMapView: NSLayoutConstraint!
     @IBOutlet var googleMapView: GMSMapView!
-    var locationMarker:GMSMarker!
     @IBOutlet var searchBar: UISearchBar!
     @IBOutlet var tableView: UITableView!
     var placesClient:GMSPlacesClient!
     var placeModelArray = [PlaceModel]()
     let identifier = "CurrentLocationSearchCell"
-    let locationManager = CLLocationManager()
     var currentLocation:CLLocationCoordinate2D!
     var shouldShowSearchResults:Bool = false
     var finalPositionAfterDragging:CLLocationCoordinate2D!
+    var locationMarker:GMSMarker!
+    var locationDragged:Bool!
+    
+    lazy var locationManager: CLLocationManager = {
+        var _locationManager = CLLocationManager()
+        _locationManager.delegate = self
+        _locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        _locationManager.activityType = .automotiveNavigation
+        _locationManager.distanceFilter = 10.0  
+        return _locationManager
+    }()
+    
     
     @IBAction func setGoogleMapLocation(_ sender: UIButton) {
+        
+        if(searchBar.text?.characters.count != 0){
+            //popviewcontroller
+        }
     }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        locationManager.requestAlwaysAuthorization()
+        locationManager.startUpdatingLocation()
+        imageAboveIcon.isHidden  = true
+    }
+    
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        tableView.isHidden   = true
-        
-        //thanks
+        searchBar.returnKeyType = .done
         tableView.backgroundColor = .clear
-        
-//        searchBar.placeholder = "Set Event Location"
-//        searchBar.setTextColor(color: .black)
-//        searchBar.setTextFieldColor(color: UIColor(red: 214.0/255.0, green: 212.0/255.0, blue: 208.0/255.0, alpha: 1.0))
-//        searchBar.setPlaceholderTextColor(color: UIColor(red: 142.0/255.0, green: 142.0/255.0, blue: 147.0/255.0, alpha: 1.0))
-//        searchBar.setSearchImageColor(color: .white)
-//        searchBar.setTextFieldClearButtonColor(color: .black)
-        
-        
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 140
+        locationDragged = true
+        shouldShowSearchResults = false
+
         changeSearchBarIcon()
+        registerTableViewcell()
+
         
-        
-        
-        for subView in searchBar.subviews {
-            for subViewOne in subView.subviews {
-                if let textField = subViewOne as? UITextField {
-                    subViewOne.backgroundColor = UIColor(red: 214, green: 212, blue: 208, alpha: 1)
-                    //use the code below if you want to change the color of placeholder
-                    let textFieldInsideUISearchBarLabel = textField.value(forKey: "placeholderLabel") as? UILabel
-                    textFieldInsideUISearchBarLabel?.textColor = UIColor(red: 142,green:142,blue: 147, alpha: 1)
-                }
-            }
-        }
-        
-        let camera = GMSCameraPosition.camera(withLatitude: 36.8520709804133, longitude:10.2075162157416, zoom: 17.0)
+        let camera = GMSCameraPosition.camera(withLatitude: 36.8520709804133, longitude:10.2075162157416, zoom: 30.0)
         self.googleMapView?.animate(to: camera)
         
         searchBar.showsCancelButton  = true
 
         imageAboveIcon.layer.zPosition = 1
+        doneGoogleMap.layer.zPosition = 1
         isAuthorizedtoGetUserLocation()
        
         if CLLocationManager.locationServicesEnabled() {
@@ -79,7 +85,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         }
         
-        registerTableViewcell()
         searchBar.delegate = self
         placesClient = GMSPlacesClient.shared()
         googleMapView.delegate = self
@@ -88,10 +93,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         let coordinations = CLLocationCoordinate2D(latitude: -33,longitude:151)
         locationMarker = GMSMarker(position: coordinations)
-        locationMarker.isDraggable = true
-        
-        
-        
+//        locationMarker.isDraggable = true
+    
     }
     //this method will be called each time when a user change his location access preference.
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -157,9 +160,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath ) as! DefaultLocationTableViewCell
         
-        
          if shouldShowSearchResults{
-            
                 if( placeModelArray.count != 0){
                     let place = placeModelArray[indexPath.row]
                     cell.titleLabelOfCell.text =  place.placeDescription
@@ -175,18 +176,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     ///no data server problem
             }
          }else{
-            
             if(indexPath.row == 0){
                 cell.titleLabelOfCell.text = "My Current Location"
             }else{
                 cell.titleLabelOfCell.text = "Set Location On Map"
             }
-
-            
-            //current and set location cell
-            
         }
-        
+
         return cell
   
 //        if(indexPath.section == 0){
@@ -218,9 +214,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
        
         
-        if shouldShowSearchResults
-        {
-            return 5
+        if shouldShowSearchResults{
+            if self.placeModelArray.count > 4 {
+                return 5
+            }else{
+                return self.placeModelArray.count
+            }
         }
         else
         {
@@ -228,6 +227,18 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
+    
+    func getImageWithColor(color: UIColor, size: CGSize) -> UIImage {
+        let rect = CGRect(x: 0  , y:  0, width: size.width, height: size.height )
+        let path = UIBezierPath(roundedRect: rect, cornerRadius: 5.0)
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        color.setFill()
+        path.fill()
+        let image: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return image
+    }
+   
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
@@ -254,120 +265,137 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
+    
+    
+    
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        
-        
-        
-        
-        
-        
-        if ( locationIsAuthorized() ){
-            
-        }else{
-            //show pop up to change the location
-        }
-        
-        
-        
-        
         
         
         if shouldShowSearchResults{
             //map data
             
-            
-            
-            
-            
-            
-            
-        }else{
-            
-            if(indexPath.row == 0){
-//                cell.titleLabelOfCell.text = "My Current Location"
+            let cell  = tableView.cellForRow(at: indexPath) as! DefaultLocationTableViewCell
+            showTestInSearchBar(locationName: cell.titleLabelOfCell.text!)
+
+            placesClient.lookUpPlaceID(cell.placeID, callback: { (place, error) -> Void in
+                if let error = error {
+                    print("lookup place id query error: \(error.localizedDescription)")
+                    return
+                }
+                guard let place = place else {
+                    print("No place details for \(cell.placeID)")
+                    return
+                }
+                print("Place name \(place.name)")
+                print("Place address \(place.formattedAddress)")
+                print("Place placeID \(place.placeID)")
+                //print("Place attributions \(place.attributions)")
+                print("Place attributions \(place.coordinate.latitude)")
+                print("Place attributions \(place.coordinate.longitude)")
+                //print("Place attributions \(place.attributions)")
                 
+                
+                let position = CLLocationCoordinate2D(latitude: place.coordinate.latitude, longitude: place.coordinate.longitude)
+                self.setupLocationMarker(coordinate: position)
+                let sydney = GMSCameraPosition.camera(withLatitude: place.coordinate.latitude,
+                                                      longitude: place.coordinate.longitude,
+                                                      zoom: 35)
+                self.googleMapView.camera = sydney
+                
+               
+            })
+        }else{
+            if(indexPath.row == 0){
+//              cell.titleLabelOfCell.text = "My Current Location"
                 if ( locationIsAuthorized() ){
                     let geocoder = GMSGeocoder()
-                    geocoder.reverseGeocodeCoordinate(finalPositionAfterDragging) { response , error in
-                        
+                    
+                    setupLocationMarker(coordinate: self.currentLocation)
+                    let position = CLLocationCoordinate2D(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
+                    self.setupLocationMarker(coordinate: position)
+                    let sydney = GMSCameraPosition.camera(withLatitude: currentLocation.latitude,
+                                                          longitude: currentLocation.longitude,
+                                                          zoom: 35)
+                    self.googleMapView.camera = sydney
+                    
+                    
+                    
+                    geocoder.reverseGeocodeCoordinate(self.currentLocation) { response , error in
                         let address:GMSAddress = (response?.firstResult())!
-                        
                         if error != nil {
                             print("GMSReverseGeocode Error: \(String(describing: error?.localizedDescription))")
                         }
                         else {
                             //print("ADDRESS?? \(address)")
-                            self.searchBar.text = address.locality
+                            
+                            let result = response?.results()?.first
+                            let address = result?.lines?.reduce("") { $0 == "" ? $1 : $0 + ", " + $1 }
+                            self.searchBar.text = address
+
                         }
                     }
-                    
-                    
                 }else{
                     //show pop up to change the location
                 }
         
                 
-                searchBar.text = "search bar"
+//                searchBar.text = "search bar"
             }else{
+                
+                if locationMarker != nil {
+                    locationMarker.map = nil
+                }
+                
+                
+                let geocoder = GMSGeocoder()
+                geocoder.reverseGeocodeCoordinate(finalPositionAfterDragging) { response , error in
+                    
+                    let address:GMSAddress = (response?.firstResult())!
+                    
+                    if error != nil {
+                        print("GMSReverseGeocode Error: \(String(describing: error?.localizedDescription))")
+                    }
+                        
+                    else {
+                        //print("ADDRESS?? \(address)")
+                        //                let lines:[String] = address.lines!
+                        
+                        let result = response?.results()?.first
+                        let address = result?.lines?.reduce("") { $0 == "" ? $1 : $0 + ", " + $1 }
+                        self.searchBar.text = address
+                    }
+                }
+            
+                imageAboveIcon.isHidden = false
 //                cell.titleLabelOfCell.text = "Set Location On Map"
-                locationMarker.isDraggable = true
-            }
-            //current and set location cell
-        }
-        
-        
-        let cell  = tableView.cellForRow(at: indexPath) as! DefaultLocationTableViewCell
-        showTestInSearchBar(locationName: cell.titleLabelOfCell.text!)
-        print(cell.placeID)
-        placesClient.lookUpPlaceID(cell.placeID, callback: { (place, error) -> Void in
-            if let error = error {
-                print("lookup place id query error: \(error.localizedDescription)")
-                return
-            }
-            guard let place = place else {
-                print("No place details for \(cell.placeID)")
-                return
-            }
-            print("Place name \(place.name)")
-            print("Place address \(place.formattedAddress)")
-            print("Place placeID \(place.placeID)")
-//            print("Place attributions \(place.attributions)")
-            print("Place attributions \(place.coordinate.latitude)")
-            print("Place attributions \(place.coordinate.longitude)")
-//            print("Place attributions \(place.attributions)")
-
-            
-            let position = CLLocationCoordinate2D(latitude: place.coordinate.latitude, longitude: place.coordinate.longitude)
-            self.setupLocationMarker(coordinate: position)
-            let sydney = GMSCameraPosition.camera(withLatitude: place.coordinate.latitude,
-                                                  longitude: place.coordinate.longitude,
-                                                  zoom: 6)
-            self.googleMapView.camera = sydney
-            tableView.isHidden = true
-            self.searchBar.resignFirstResponder()
-
-//            let marker = GMSMarker(position: position)
-//            marker.title = place.formattedAddress
-//            marker.map = self.googleMapView
-//            self.googleMapView.selectedMarker = marker
-//            
-//            
-            
-        })
-        
-        
-        
-        
-        if(indexPath.section == 0 ){
-            if(indexPath.row == 0){
+//                locationMarker.isDraggable = true
                 
-            }else{
+                
                 
             }
-        }else{
-            
         }
+        
+        doneGoogleMap.isHidden = false
+        
+        
+//                
+//        
+//        
+//        
+//        if(indexPath.section == 0 ){
+//            if(indexPath.row == 0){
+//                
+//            }else{
+//                
+//            }
+//        }else{
+//            
+//        }
+//        
+
+        tableView.isHidden = true
+        self.searchBar.resignFirstResponder()
         
     }
     
@@ -422,14 +450,37 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             searchField.leftViewMode = .always
             searchField.superview?.addSubview(imageView)
         }
+        
+        for subView in searchBar.subviews {
+            for subViewOne in subView.subviews {
+                if let textField = subViewOne as? UITextField {
+                    subViewOne.backgroundColor = UIColor(red: 214, green: 212, blue: 208, alpha: 1)
+                    //use the code below if you want to change the color of placeholder
+                    var bounds: CGRect
+                    bounds = textField.frame
+                    bounds.size.height = 80 //(set height whatever you want)
+                    textField.bounds = bounds
+                    
+                    let textFieldInsideUISearchBarLabel = textField.value(forKey: "placeholderLabel") as? UILabel
+                    textFieldInsideUISearchBarLabel?.textColor = UIColor(red: 142,green:142,blue: 147, alpha: 1)
+                }
+            }
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {   //delegate method
+        textField.resignFirstResponder()
+        searchBar.resignFirstResponder()
+
+        return true
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if !shouldShowSearchResults {
-            shouldShowSearchResults = true
-        }
-        
+//        if !shouldShowSearchResults {
+//            shouldShowSearchResults = true
+//        }
         searchBar.resignFirstResponder()
+
     }
     
     func searchBarfdButtonClicked(searchBar: UISearchBar) {
@@ -439,16 +490,16 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
+        imageAboveIcon.isHidden = true
+        doneGoogleMap.isHidden = true
         tableView.isHidden = false
-        
-        
-        // To still display the search results when the search button is tapped, not the whole list
-        if searchBar.text != "" {
-            shouldShowSearchResults = true
-        }
-        else{
-            shouldShowSearchResults = false
-        }
+
+//        if searchBar.text != "" {
+//            shouldShowSearchResults = true
+//        }
+//        else{
+//            shouldShowSearchResults = false
+//        }
         
         
        
@@ -469,12 +520,16 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 //    
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar){
-    
+
+        doneGoogleMap.isHidden = true
+
+        
         print("Cancel called")
-        
         searchBar.resignFirstResponder()
-        
         searchBar.text = ""
+        shouldShowSearchResults = false
+        
+        tableView.reloadData()
     }
 
     
@@ -489,6 +544,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         placesClient.autocompleteQuery(searchString, bounds: nil, filter: filter, callback: {(results, error) -> Void in
             if let error = error {
                 print("Autocomplete error \(error)")
+                self.shouldShowSearchResults = false
                 return
             }
             if let results = results {
@@ -507,7 +563,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     print("Result \(result.attributedFullText) with placeID \(result.placeID)")
                 }
                 self.placeModelArray.removeAll()
-                self.placeModelArray = weakPlaceModel
+               // self.placeModelArray = weakPlaceModel
+                 self.placeModelArray = NSArray(array: weakPlaceModel) as! [PlaceModel]
+                self.shouldShowSearchResults = true
                 self.tableView.reloadData()
             }
         })
@@ -526,16 +584,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         if(searchBar.text != ""){
             // Filter the data array and get only those countries that match the search text.
             searchPlaceInGoogleMap(name: searchString)
-            shouldShowSearchResults = true;
         }else{
-            shouldShowSearchResults = false;
             
             
         }
     }
-    
-    
-    
     
     func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D) {
         // mapSearchBar.resignFirstResponder()
@@ -547,6 +600,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
      */
     public func mapView(_ mapView: GMSMapView, didBeginDragging marker: GMSMarker){
         print("didBeginDragging")
+        locationDragged = true
     }
     
     
@@ -557,41 +611,79 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     public func mapView(_ mapView: GMSMapView, didEndDragging marker: GMSMarker){
         print("didEndDragging")
         
-        let geocoder = GMSGeocoder()
-        geocoder.reverseGeocodeCoordinate(finalPositionAfterDragging) { response , error in
-            
-            let address:GMSAddress = (response?.firstResult())!
-            
-            if error != nil {
-                print("GMSReverseGeocode Error: \(String(describing: error?.localizedDescription))")
+        locationDragged = false
+        
+        if(!imageAboveIcon.isHidden){
+            let geocoder = GMSGeocoder()
+            geocoder.reverseGeocodeCoordinate(finalPositionAfterDragging) { response , error in
+                let address:GMSAddress = (response?.firstResult())!
+                if error != nil {
+                    print("GMSReverseGeocode Error: \(String(describing: error?.localizedDescription))")
+                }
+                else {
+                    self.searchBar.text = address.locality
+                }
             }
+        }
+    }
+   
+    
+    func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
+        
+        print("idleAt")
+
+        
+        if(!imageAboveIcon.isHidden) {
+            let geocoder = GMSGeocoder()
+            geocoder.reverseGeocodeCoordinate(finalPositionAfterDragging) { response , error in
+            
+                let address:GMSAddress = (response?.firstResult())!
                 
-            else {
-                //print("ADDRESS?? \(address)")
-                self.searchBar.text = address.locality
+                if error != nil {
+                    print("GMSReverseGeocode Error: \(String(describing: error?.localizedDescription))")
+                }
+                    
+                else {
+                    //print("ADDRESS?? \(address)")
+    //                let lines:[String] = address.lines!
+
+                    let result = response?.results()?.first
+                    let address = result?.lines?.reduce("") { $0 == "" ? $1 : $0 + ", " + $1 }
+                    self.searchBar.text = address
+                }
             }
         }
         
-    
     }
     
-    
     func mapView(_ mapView: GMSMapView, didChange position: GMSCameraPosition) {
+        
+        print("didChange")
+
+        
+        
         let latitute = mapView.camera.target.latitude
         let longitude = mapView.camera.target.longitude
-        
-        
         finalPositionAfterDragging = CLLocationCoordinate2DMake(latitute, longitude)
         
         
-        print("******")
-        print(finalPositionAfterDragging.latitude)
-        print(finalPositionAfterDragging.longitude)
-        print("*****")
+//        print("******")
+//        print(finalPositionAfterDragging.latitude)
+//        print(finalPositionAfterDragging.longitude)
+//        print("*****")
 
     }
     
+    func mapView(_ mapView: GMSMapView, willMove gesture: Bool) {
+        print("will move")
+
+    }
+    
+
+    
     func mapView(_ mapView: GMSMapView, didDrag marker: GMSMarker) {
+        print("will didDrag")
+
         //        for (markerDict, spotDict) in markerToSpotDictionary where markerDict == marker {
         //            spotDict.coordinate = marker.position
         //            CommonMethods.sharedInstance.updateSpot(spotDict, map: map!)
@@ -611,6 +703,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     
     func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+        print("regionWillChangeAnimated")
+
         print(#function)
         let coordinate = CLLocationCoordinate2DMake(mapView.centerCoordinate.longitude, mapView.centerCoordinate.latitude)
             print("******")
